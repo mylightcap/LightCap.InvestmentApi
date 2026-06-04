@@ -44,10 +44,10 @@ namespace LightCap.InvestmentApi.Application.Features.Auth.Registration.Commands
                     $"It will expire in {expiryMinutes} minutes.";
 
 
-                //await emailService.SendEmailWithFallback(
-                //    dto.Email,
-                //    emailSubject,
-                //    emailContent);
+                await emailService.SendEmailWithFallback(
+                    dto.Email,
+                    emailSubject,
+                    emailContent);
 
 
                 var otp = new Otp
@@ -92,6 +92,8 @@ namespace LightCap.InvestmentApi.Application.Features.Auth.Registration.Commands
 
                 await repository.AddAsync(user, cancellationToken);
                 await repository.SaveChanges(cancellationToken);
+
+
 
                 return Result.Ok(new UserRegistrationResponse
                 {

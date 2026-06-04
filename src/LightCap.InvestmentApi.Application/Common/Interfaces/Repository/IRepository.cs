@@ -26,7 +26,7 @@ namespace LightCap.InvestmentApi.Application.Common.Interfaces
         Task DeleteAsync(T entity);
         Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default);
         Task<bool> ExistsAsync(Guid id);
-
+        IQueryable<T> GetQueryable();
         Task<T> GetRecentRecord<TOrderBy>(Expression<Func<T, bool>> expression, Expression<Func<T, TOrderBy>> orderBy);
         IQueryable<T> GetAndInclude(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] includeProperties);
         Task<T> Insert(T entity);

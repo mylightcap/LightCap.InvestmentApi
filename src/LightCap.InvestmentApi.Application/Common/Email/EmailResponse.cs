@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LightCap.InvestmentApi.Infrastructure.Services.EmailService;
+namespace LightCap.InvestmentApi.Application.Common.Email;
 
     public class EmailResponse
     {

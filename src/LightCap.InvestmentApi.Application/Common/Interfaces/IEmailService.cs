@@ -1,7 +1,11 @@
-﻿namespace LightCap.InvestmentApi.Application.Common.Interfaces;
+﻿
+
+using LightCap.InvestmentApi.Application.Common.Email;
+
+namespace LightCap.InvestmentApi.Application.Common.Interfaces;
 
 public interface IEmailService
     {
-    Task SendEmailWithFallback(string to, string subject, string body, bool isHtml = true);
+    Task<EmailResponse> SendEmailWithFallback(string to, string subject, string body, bool isHtml = true);
 }
 

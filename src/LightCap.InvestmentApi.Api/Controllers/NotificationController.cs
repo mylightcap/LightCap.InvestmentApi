@@ -18,26 +18,12 @@ public class EmailController : ControllerBase
     [HttpPost("send")]
     public async Task<IActionResult> SendEmail([FromBody] SendEmailRequest request)
     {
-      
-        try
+        var result = await _emailService.SendEmailWithFallback(request.To, request.Subject, request.Body);
+        if (!result.Success)
         {
-            await _emailService.SendEmailWithFallback(request.To, request.Subject, request.Body
-            );
+            return BadRequest(result);
+        }
 
-            return Ok(new
-            {
-                success = true,
-                message = "Email sent successfully"
-            });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new
-            {
-                success = false,
-                message = "Failed to send email",
-                error = ex.Message
-            });
-        }
+        return Ok(result);
     }
 }

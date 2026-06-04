@@ -48,6 +48,8 @@ public class Repository<T> : IRepository<T>
         return await _dbSet.AsNoTracking().ToListAsync();
     }
 
+   
+
     public async Task<(IEnumerable<T> Data, int Total)> GetPaginatedAsync(int page, int pageSize,
     params Expression<Func<T, object>>[] includes)
     {

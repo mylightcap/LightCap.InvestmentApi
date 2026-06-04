@@ -1,54 +1,73 @@
-﻿using LightCap.InvestmentApi.Application.Common.Interfaces;
+﻿using LightCap.InvestmentApi.Application.Common.Email;
+using LightCap.InvestmentApi.Application.Common.Interfaces;
+using MailKit.Net.Smtp;
 using Microsoft.Extensions.Configuration;
-using System.IO;
-using System.Net;
+using MimeKit;
 using System.Net.Mail;
-using System.Net.NetworkInformation;
 
 namespace LightCap.InvestmentApi.Infrastructure.Services.EmailService;
 
-public class EmailService(IConfiguration configuration) : IEmailService
+public class EmailService : IEmailService
 {
-    
+    private readonly IConfiguration _configuration;
 
-    public async Task SendEmailWithFallback(string to, string subject, string body, bool isHtml = true)
+    public EmailService(IConfiguration configuration)
     {
-        var smtpServers = new[] {
-        new { Host = configuration["Email:Host"], Port = int.Parse(configuration["Email:Port"]!) }
-        // Add backups if needed
-        };
+        _configuration = configuration;
+    }
 
-        
-       
+    public async Task<EmailResponse> SendEmailWithFallback(
+        string to,
+        string subject,
+        string body,
+        bool isHtml = true)
+    {
+        try
+         {
+            var email = new MimeMessage();
 
-        foreach (var server in smtpServers)
-        {
-            try
+            email.From.Add(new MailboxAddress(
+                _configuration["Brevo:FromName"],
+                _configuration["Brevo:FromEmail"]
+            ));
+
+            email.To.Add(MailboxAddress.Parse(to));
+            email.Subject = subject;
+
+            email.Body = new TextPart(isHtml ? "html" : "plain")
             {
-                using var client = new SmtpClient(server.Host, server.Port)
-                {
-                    Credentials = new NetworkCredential(
-                        configuration["Email:EmailHost"],
-                        configuration["Email:Password"]
-                    ),
-                    EnableSsl = true
-                };
+                Text = body
+            };
 
-                var mailMessage = new MailMessage(configuration["Email:EmailHost"]!, to, subject, body);
-                mailMessage.IsBodyHtml = true;
+            using var smtp = new MailKit.Net.Smtp.SmtpClient();
 
-                await client.SendMailAsync(mailMessage);
-                //return new EmailResponse { Success = true, Message = "Email sent successfully" };
-            }
-            catch (Exception ex)
+            await smtp.ConnectAsync(
+                _configuration["Brevo:Host"],
+                int.Parse(_configuration["Brevo:Port"]!),
+                MailKit.Security.SecureSocketOptions.StartTls
+            );
+
+            await smtp.AuthenticateAsync(
+                _configuration["Brevo:Username"],
+                _configuration["Brevo:Password"]
+            );
+
+            await smtp.SendAsync(email);
+            await smtp.DisconnectAsync(true);
+
+            return new EmailResponse
             {
-                Console.WriteLine($"SMTP error with server {server.Host}: {ex.Message}");
-                // Optionally log the error
-            }
+                Success = true,
+                Message = "Email sent successfully via Brevo"
+            };
         }
-
-        // If no SMTP server succeeded
-        throw new Exception("All SMTP servers failed");
+        catch (Exception ex)
+        {
+            return new EmailResponse
+            {
+                Success = false,
+                Message = $"Email sending failed: {ex.Message}"
+            };
+        }
     }
 }
-

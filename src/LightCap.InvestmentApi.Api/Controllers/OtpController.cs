@@ -1,6 +1,6 @@
 ﻿using LightCap.InvestmentApi.Application.Common.Interfaces;
 using LightCap.InvestmentApi.Application.Features.Auth.OtpReset.Commands;
-using LightCap.InvestmentApi.Application.Features.Auth.OtpVerification.Commands;
+using LightCap.InvestmentApi.Infrastructure.Services.OTP.OtpVerification;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -41,6 +41,7 @@ public class OtpController : ControllerBase
             return Ok(result.Value);
         }
         return BadRequest(result.Errors.Select(e => e.Message));
+    
     }
 
     [HttpPost("otpReset")]
