@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,5 +33,6 @@ namespace LightCap.InvestmentApi.Application.Common.Interfaces
         Task<T> Insert(T entity);
         Task<T> GetSingleAsync(Expression<Func<T, bool>> expression);
         Task<(IEnumerable<T> Data, int Total)> GetPaginatedAsync(int page, int pageSize, params Expression<Func<T, object>>[] includes);
+        Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken);
     }
 }

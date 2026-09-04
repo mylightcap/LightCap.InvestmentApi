@@ -24,6 +24,8 @@ namespace LightCap.InvestmentApi.Domain.Entities
 
         public required string PasswordHash { get; set; }
 
+        public bool IsEmailVerified { get; set; }
+
         public bool AcceptTermsAndConditions { get; set; }
 
         public bool AcceptPrivacyPolicy { get; set; }

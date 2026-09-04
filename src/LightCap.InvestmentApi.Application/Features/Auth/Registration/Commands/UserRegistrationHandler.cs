@@ -31,6 +31,7 @@ namespace LightCap.InvestmentApi.Application.Features.Auth.Registration.Commands
 
 
                 //OTP Generation and sending logic would go here (e.g., using an email service or SMS service)
+                var userId = Guid.NewGuid();
                 var otpLength = int.Parse(config["OTP:Length"]!);
                 var generatedOtp = otpService.GenerateOtp();
                 var hashedOtp = BCrypt.Net.BCrypt.HashPassword(generatedOtp);
@@ -52,7 +53,7 @@ namespace LightCap.InvestmentApi.Application.Features.Auth.Registration.Commands
 
                 var otp = new Otp
                 {
-                    UserId = Guid.NewGuid(),
+                    UserId = userId,
                     Email = dto.Email,
                     Code = hashedOtp,
                     ExpiryTime = DateTime.UtcNow.AddMinutes(expiryMinutes),
@@ -61,15 +62,10 @@ namespace LightCap.InvestmentApi.Application.Features.Auth.Registration.Commands
                     CreatedAt = DateTime.UtcNow
                 };
 
-                await otpRepository.AddAsync(otp, cancellationToken);
-
-                await otpRepository.SaveChanges(cancellationToken);
-
-
 
                 var user = new User
                 {
-                    Id = Guid.NewGuid(),
+                    Id = userId,
                     FirstName = dto.FirstName,
                     LastName = dto.LastName,
                     MiddleName = dto.MiddleName,
@@ -90,14 +86,31 @@ namespace LightCap.InvestmentApi.Application.Features.Auth.Registration.Commands
                 };
 
 
-                await repository.AddAsync(user, cancellationToken);
-                await repository.SaveChanges(cancellationToken);
+
+
+
+                await using var transaction = await repository.BeginTransactionAsync(cancellationToken);
+
+                try
+                {
+                    await repository.AddAsync(user, cancellationToken);
+                    await otpRepository.AddAsync(otp, cancellationToken);
+
+                    await repository.SaveChanges(cancellationToken);
+
+                    await transaction.CommitAsync(cancellationToken);
+                }
+                catch
+                {
+                    await transaction.RollbackAsync(cancellationToken);
+                    throw;
+                }
 
 
 
                 return Result.Ok(new UserRegistrationResponse
                 {
-                    UserId = Guid.NewGuid(),
+                    UserId = userId,
                     //FullName = request.UserRegistrationDto.FullName,
                     Email = request.UserRegistrationDto.Email,
                     PhoneNumber = request.UserRegistrationDto.PhoneNumber,

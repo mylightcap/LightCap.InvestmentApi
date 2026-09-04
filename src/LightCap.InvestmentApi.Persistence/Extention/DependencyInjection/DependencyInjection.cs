@@ -20,7 +20,7 @@ namespace LightCap.InvestmentApi.Persistence.Extention.DependencyInjection
             IConfiguration configuration)
         {
             var connStr = configuration.GetConnectionString("LightCap");
-            services.AddDbContextFactory<AppDbContext>(options =>
+            services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(connStr, sqlOpt =>
                     sqlOpt.EnableRetryOnFailure())
             );
@@ -30,6 +30,8 @@ namespace LightCap.InvestmentApi.Persistence.Extention.DependencyInjection
             services.AddScoped<IRepository<UserLogin>, Repository<UserLogin>>();
             services.AddScoped<IRepository<Otp>, Repository<Otp>>();
             
+
+            //services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
             return services;
         }

@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using LightCap.InvestmentApi.Application.Common.Behaviors;
+using LightCap.InvestmentApi.Application.Common.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,7 +27,7 @@ public static class DependencyInjection
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
-
+       
 
         return services;
     }

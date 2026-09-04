@@ -10,6 +10,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options): DbContext(opt
     public DbSet<User> Users { get; set; }
     public DbSet<UserLogin> UserLogins { get; set; }
     public DbSet<Otp> Otps { get; set; }
+    public DbSet<LinkedBankAccount> LinkedBankAccounts { get; set; }
+    public DbSet<Wallets> Wallets { get; set; }
+    public DbSet<WalletTransaction> WalletTransactions { get; set; }
 
 
 

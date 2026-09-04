@@ -3,6 +3,7 @@ using LightCap.InvestmentApi.Application.Common.Interfaces;
 using LightCap.InvestmentApi.Infrastructure.Persistence.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 
@@ -170,7 +171,11 @@ public class Repository<T> : IRepository<T>
         }
     }
 
-
+    public async Task<IDbContextTransaction> BeginTransactionAsync(
+    CancellationToken cancellationToken = default)
+    {
+        return await _context.Database.BeginTransactionAsync(cancellationToken);
+    }
 
     public IEnumerable<T> GetAll()
     {
@@ -190,4 +195,6 @@ public class Repository<T> : IRepository<T>
 
         return item;
     }
+
+   
 }

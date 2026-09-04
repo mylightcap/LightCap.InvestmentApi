@@ -10,7 +10,7 @@ namespace LightCap.InvestmentApi.Infrastructure.Services.OTP.OtpVerification;
 public record OtpVerificationCommand(string Email, string OtpCode)
     : IRequest<Result<OtpVerificationCommandOutput>>;
 
-public class OtpVerificationCommandHandler(IRepository<Otp> otpRepository)
+public class OtpVerificationCommandHandler(IRepository<Otp> otpRepository, IRepository<User> userRepository)
     : IRequestHandler<OtpVerificationCommand, Result<OtpVerificationCommandOutput>>
 {
     public async Task<Result<OtpVerificationCommandOutput>> Handle(
@@ -38,24 +38,31 @@ public class OtpVerificationCommandHandler(IRepository<Otp> otpRepository)
                     "OTP has expired.");
             }
 
-            
+
+            if (otp.AttemptCount >= 5)
+                return Result.Fail<OtpVerificationCommandOutput>("Too many incorrect attempts. Please request a new code.");
+
             var isValidOtp = BCrypt.Net.BCrypt.Verify(request.OtpCode, otp.Code);
 
             if (!isValidOtp)
             {
                 otp.AttemptCount++;
-
                 await otpRepository.UpdateAsync(otp);
                 await otpRepository.SaveChanges(cancellationToken);
-
-                return Result.Fail<OtpVerificationCommandOutput>(
-                    "Invalid OTP.");
+                return Result.Fail<OtpVerificationCommandOutput>("Invalid OTP.");
             }
 
-            
+
             otp.IsUsed = true;
 
+            var user = await userRepository.GetSingleAsync(u => u.Email == request.Email);
+            if (user == null)
+                return Result.Fail<OtpVerificationCommandOutput>("No account found for this email.");
+
+            user.IsEmailVerified = true;
+
             await otpRepository.UpdateAsync(otp);
+            await userRepository.UpdateAsync(user);
             await otpRepository.SaveChanges(cancellationToken);
 
             

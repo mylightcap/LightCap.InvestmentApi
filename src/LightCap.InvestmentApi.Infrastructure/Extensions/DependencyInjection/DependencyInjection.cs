@@ -9,6 +9,7 @@ using LightCap.InvestmentApi.Infrastructure.Services.EmailService;
 using LightCap.InvestmentApi.Infrastructure.Services.JWT;
 using LightCap.InvestmentApi.Infrastructure.Services.Logger;
 using LightCap.InvestmentApi.Infrastructure.Services.Logger.Slack;
+using LightCap.InvestmentApi.Infrastructure.Services.Mono;
 using LightCap.InvestmentApi.Infrastructure.Services.OTP.OtpVerification;
 using LightCap.InvestmentApi.Infrastructure.Services.OTP.TokenGenerator;
 using MediatR;
@@ -49,9 +50,11 @@ public static class DependencyInjection
         
         services.AddScoped<ILoggerService, LoggerService>();
         services.AddScoped<ISlackLogger, SlackLogger>();
+        services.AddHttpClient<IMonoService, MonoService>();
 
         services.AddTransient<IRequestHandler<OtpVerificationCommand, Result<OtpVerificationCommandOutput>>, OtpVerificationCommandHandler>();
         services.AddTransient<IRequestHandler<OtpResetCommand, Result<OtpVerificationCommandOutput>>, OtpResetCommandHandler>();
+        services.AddScoped<IRepository<LinkedBankAccount>, Repository<LinkedBankAccount>>();
 
         return services;
     }
