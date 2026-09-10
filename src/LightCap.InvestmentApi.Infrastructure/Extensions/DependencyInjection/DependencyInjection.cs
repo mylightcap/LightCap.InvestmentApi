@@ -2,7 +2,9 @@
 using CustOps.Infrastructure.Persistence.Repositories;
 using FluentResults;
 using LightCap.InvestmentApi.Application.Common.Interfaces;
+using LightCap.InvestmentApi.Application.Common.Interfaces.Repository;
 using LightCap.InvestmentApi.Application.Features.Auth.OtpReset.Commands;
+using LightCap.InvestmentApi.Application.Features.MonoService.MonoDebit;
 using LightCap.InvestmentApi.Domain.Entities;
 using LightCap.InvestmentApi.Infrastructure.Persistence.DbContexts;
 using LightCap.InvestmentApi.Infrastructure.Services.EmailService;
@@ -51,10 +53,15 @@ public static class DependencyInjection
         services.AddScoped<ILoggerService, LoggerService>();
         services.AddScoped<ISlackLogger, SlackLogger>();
         services.AddHttpClient<IMonoService, MonoService>();
-
+        //services.AddScoped<>
         services.AddTransient<IRequestHandler<OtpVerificationCommand, Result<OtpVerificationCommandOutput>>, OtpVerificationCommandHandler>();
         services.AddTransient<IRequestHandler<OtpResetCommand, Result<OtpVerificationCommandOutput>>, OtpResetCommandHandler>();
         services.AddScoped<IRepository<LinkedBankAccount>, Repository<LinkedBankAccount>>();
+        services.AddScoped<IRepository<Wallet>, Repository<Wallet>>();
+        services.AddScoped<IRepository<WalletTransaction>, Repository<WalletTransaction>>();
+        services.AddScoped<IMonoMandateService, MonoMandateService>();
+        services.AddScoped<IRepository<DirectDebitMandate>, Repository<DirectDebitMandate>>();
+        services.AddHttpClient<IMonoDebitService, MonoDebitService>();
 
         return services;
     }

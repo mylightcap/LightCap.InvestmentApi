@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LightCap.InvestmentApi.Domain.Entities
 {
-    public class Wallets
+    public class Wallet
     {
 
 
@@ -35,9 +35,7 @@ namespace LightCap.InvestmentApi.Domain.Entities
         // successful. This is what's actually sitting with LightCap, ready
         // to be sent to the investment partner.
 
-        public class Wallet
-        {
-            public Guid Id { get; set; }
+        public Guid Id { get; set; }
             public Guid UserId { get; set; }
             public decimal PendingRoundUpBalance { get; set; }
             public decimal AvailableBalance { get; set; }        
@@ -45,7 +43,7 @@ namespace LightCap.InvestmentApi.Domain.Entities
             public DateTime CreatedAt { get; set; }
             public DateTime UpdatedAt { get; set; }
             public User? User { get; set; }
-        }
+        
     }
 }
 

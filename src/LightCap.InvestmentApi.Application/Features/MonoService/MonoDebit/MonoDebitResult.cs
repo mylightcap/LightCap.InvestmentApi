@@ -4,12 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LightCap.InvestmentApi.Application.Features.MonoHandler.Command
+namespace LightCap.InvestmentApi.Application.Features.MonoService.MonoDebit
 {
-    public class MonoExchangeTokenResult
+    public class MonoDebitResult
     {
         public bool Success { get; set; }
-        public string? AccountId { get; set; }
         public string? ErrorMessage { get; set; }
     }
 }

@@ -11,7 +11,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options): DbContext(opt
     public DbSet<UserLogin> UserLogins { get; set; }
     public DbSet<Otp> Otps { get; set; }
     public DbSet<LinkedBankAccount> LinkedBankAccounts { get; set; }
-    public DbSet<Wallets> Wallets { get; set; }
+    public DbSet<Wallet> Wallets { get; set; }
     public DbSet<WalletTransaction> WalletTransactions { get; set; }
 
 
@@ -21,6 +21,17 @@ public class AppDbContext(DbContextOptions<AppDbContext> options): DbContext(opt
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+
+        // Apply consistent precision to every decimal property in the model,
+        // instead of configuring each one individually.
+        foreach (var property in modelBuilder.Model.GetEntityTypes()
+                     .SelectMany(t => t.GetProperties())
+                     .Where(p => p.ClrType == typeof(decimal) || p.ClrType == typeof(decimal?)))
+        {
+            property.SetPrecision(18);
+            property.SetScale(2);
+        }
     }
     private static string Normalize(string s) => s.Replace(" ", "").Replace("-", "");
 }

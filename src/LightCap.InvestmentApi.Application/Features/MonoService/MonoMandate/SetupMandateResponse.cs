@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LightCap.InvestmentApi.Application.Features.MonoHandler.Command
+namespace LightCap.InvestmentApi.Application.Features.MonoService.MonoMandate
 {
-    public class MonoExchangeTokenResponse
+    public class SetupMandateResponse
     {
-        public string AccountId { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
         public string Message { get; set; } = string.Empty;
     }
 }

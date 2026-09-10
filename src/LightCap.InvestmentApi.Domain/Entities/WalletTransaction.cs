@@ -4,39 +4,44 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static LightCap.InvestmentApi.Domain.Entities.Wallets;
+
 
 namespace LightCap.InvestmentApi.Domain.Entities
 {
     public class WalletTransaction
     {
-      
-        // The ledger - an append-only history of every single wallet movement,
-        // across BOTH balances. This is the source of truth; Wallet's two balance
-        // fields are just cached "current totals" for fast reads.
-        
-            public Guid Id { get; set; }
-            public Guid WalletId { get; set; }
-            public Guid UserId { get; set; }   // denormalized for easy querying without a join
 
-            public WalletTransactionType Type { get; set; }
-            public WalletTransactionStatus Status { get; set; }           
-            public decimal Amount { get; set; }
+        public Guid Id { get; set; }
+        public Guid WalletId { get; set; }
+        public Guid UserId { get; set; }   // denormalized for easy querying without a join
 
-            // Snapshots for audit trail - what each balance was AFTER this transaction.
-            public decimal PendingRoundUpBalanceAfter { get; set; }
-            public decimal AvailableBalanceAfter { get; set; }
+        public WalletTransactionType Type { get; set; }
+        public WalletTransactionStatus Status { get; set; }
 
-            // Ties this transaction back to its source, and is critical for idempotency:
-            // e.g. the Mono transaction ID for a SpendRoundUp, or the Mono DirectPay
-            // reference for a ThresholdDebit. This is what stops the same webhook
-            // from being processed twice.
-            public string SourceReference { get; set; } = string.Empty;
-            public string? Description { get; set; }
-            public DateTime CreatedAt { get; set; }
-            public DateTime? CompletedAt { get; set; }
-            public Wallet? Wallet { get; set; }
-        
+        // The amount actually debited (after the ₦200 floor is applied) -
+        // NOT necessarily the raw calculated percentage. See Description
+        // for the raw calculated amount, for transparency/audit purposes.
+        public decimal Amount { get; set; }
+
+        // Snapshot for audit trail - what AvailableBalance was AFTER this transaction.
+        public decimal AvailableBalanceAfter { get; set; }
+
+        // Ties this transaction back to its source, and is critical for idempotency:
+        // the Mono transaction ID that triggered this debit. This is what stops
+        // the same spend webhook from being processed twice.
+        public string SourceReference { get; set; } = string.Empty;
+
+        // The reference sent TO Mono for this specific debit call - needed to
+        // match up the later debit-confirmation webhook to this exact row.
+        public string? MonoDebitReference { get; set; }
+
+        public string? Description { get; set; }
+
+        public DateTime CreatedAt { get; set; }
+        public DateTime? CompletedAt { get; set; }
+
+        public Wallet? Wallet { get; set; }
+
     }
 }
 

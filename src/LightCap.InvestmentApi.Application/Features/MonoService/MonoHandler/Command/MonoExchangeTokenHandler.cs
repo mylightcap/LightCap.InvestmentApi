@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LightCap.InvestmentApi.Application.Features.MonoHandler.Command
+namespace LightCap.InvestmentApi.Application.Features.MonoService.MonoHandler.Command
 {
     
         // UserId comes from the authenticated user's JWT (set by the controller),
