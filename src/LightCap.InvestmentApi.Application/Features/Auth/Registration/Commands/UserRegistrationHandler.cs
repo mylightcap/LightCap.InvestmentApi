@@ -36,6 +36,7 @@ namespace LightCap.InvestmentApi.Application.Features.Auth.Registration.Commands
                 var hashedOtp = BCrypt.Net.BCrypt.HashPassword(generatedOtp);
                 var expiryMinutes = int.Parse(config["OTP:ExpiryMinutes"]!);
 
+                var look = 1; 
 
                 var emailSubject = "Email Verification OTP";
 
